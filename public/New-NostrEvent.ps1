@@ -12,7 +12,7 @@ function New-NostrEvent {
             HelpMessage = 'Basic event kind of the nostr event. Each kind has a corresponding integer value.',
             Mandatory=$true)]
         [ValidateNotNullOrEmpty()]
-        [Basic_Event_Kind]
+        [Event_Kind]
         $Kind,
 
         [Parameter(

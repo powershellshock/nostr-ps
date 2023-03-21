@@ -7,7 +7,7 @@ function New-NostrEventTag {
             Position=0,
             Mandatory=$true)]
         [ValidateNotNullOrEmpty()]
-        [ValidateSet('Event','Pubkey')]
+        [ValidateSet('event','pubkey','coordinates','reference','hashtag','geohash','random','subject','identifier','expiryTime')]
         [string]
         $Type,
 
@@ -31,8 +31,19 @@ function New-NostrEventTag {
         [string]$RelayUrl=""
     )  
     Process {
-        $tag_id = ($Type.ToLower())[0]
         $Target = $Target.ToLower()
-        @($tag_id,$Target,$RelayUrl)
+
+        switch ($Type) {
+            event       {@("e",$Target,$RelayUrl,$Marker)}
+            pubkey      {@("p",$Target,$RelayUrl)}
+            coordinates {@("a",$Target,$RelayUrl)}
+            reference   {@("r",$Target)}
+            hashtag     {@("t",$Target)}
+            geohash     {@("g",$Target)}
+            random      {@("nonce",$Target)}
+            subject     {@("subject",$Target)}
+            identifier  {@("d",$Target)}
+            expiryTime  {@("expiration",$Target)}
+        }
     }
 }
