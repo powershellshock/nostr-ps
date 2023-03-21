@@ -28,23 +28,27 @@
     app_specific_data = 30078
 }
 
-
-
 # Includes
-$mypath = (Split-Path -Parent -Path $MyInvocation.MyCommand.Definition)
-Resolve-Path -Path $mypath\private\*.ps1 | ForEach-Object -Process {$_.ProviderPath}
-Resolve-Path -Path $mypath\public\*.ps1 | ForEach-Object -Process {$_.ProviderPath}
-Resolve-Path -Path $mypath\tests\*.ps1 | ForEach-Object -Process {$_.ProviderPath}
+. "$PSScriptRoot\private\Update-NostrEventHash.ps1"
+. "$PSScriptRoot\private\New-NostrEventTag.ps1"
+. "$PSScriptRoot\public\ConvertFrom-Bech32.ps1"
+. "$PSScriptRoot\public\ConvertTo-EpochSeconds.ps1"
+. "$PSScriptRoot\public\Get-NostrKey.ps1"
+. "$PSScriptRoot\public\New-NostrEvent.ps1"
 
 # Functions to export
 $ExportedCommands = @(
     'ConvertFrom-Bech32',
+    'ConvertTo-EpochSeconds',
     'Get-NostrKey',
     'New-NostrEvent',
     'New-NostrEventTag',
-    'Test-NostrModule'
+    'Test-NostrModule',
+    'Update-NostrEventHash'
 )
-$ExportedCommands | ForEach-Object {Export-ModuleMember -Function $_}
+$ExportedCommands | ForEach-Object {
+    Export-ModuleMember -Function $_
+}
 
 # Variables to export
 Export-ModuleMember -Variable nostrId

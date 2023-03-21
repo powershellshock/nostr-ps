@@ -11,5 +11,6 @@ function ConvertTo-EpochSeconds {
         [Parameter(Mandatory=$true,ValueFromPipeline=$true,Position=0)]
         [datetime]$Timestamp
     )
-    (New-TimeSpan -Start (Get-Date "01/01/1970") -End (Get-Date $Timestamp)).TotalSeconds  
+    #(New-TimeSpan -Start (Get-Date "01/01/1970") -End (Get-Date $Timestamp)).TotalSeconds  
+    [math]::Round((Get-Date $Timestamp -UFormat %s),0)
 }

@@ -32,7 +32,7 @@ function New-NostrEvent {
     $nsec = $nostrId.GetNetworkCredential().Password
 
     $nostrEvent = [ordered]@{
-        id = '1234567890abcdef1234567890abcdef'  # TO BE COMPUTED
+        id = ''  # TO BE COMPUTED
         pubkey = $nostrId.GetNetworkCredential().username | ConvertFrom-Bech32
         created_at = [math]::Round((Get-Date -UFormat %s),0)
         kind = $Kind -as [int]
@@ -40,7 +40,9 @@ function New-NostrEvent {
         content = $Content
         sig = '1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef'
     }
-
+    
+    $nostrEvent = Update-NostrEventHash $nostrEvent
+    
     $output = $nostrEvent | ConvertTo-Json #-Compress
     
     $output
