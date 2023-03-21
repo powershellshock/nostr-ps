@@ -12,12 +12,13 @@ function New-NostrEventTag {
         $Type,
 
         [Parameter(
-            HelpMessage = 'Hex id of event or public key to be referenced by this tag.',
+            HelpMessage = 'Hex id of event or public key or subscription to be referenced by this tag.',
             ValueFromPipeline=$true,
             Position=1,
             Mandatory=$true)]
         [ValidateNotNullOrEmpty()]
-        [ValidatePattern('^[A-Fa-f0-9]{32}$')]
+        [ValidateLength(32,64)]
+        [ValidatePattern('[A-Fa-f0-9]')]
         [string]$Target,
 
         [Parameter(
@@ -26,17 +27,12 @@ function New-NostrEventTag {
             Position=2,
             Mandatory=$false)]
         [ValidateNotNullOrEmpty()]
-
-        [string]$RelayUrl
-    )
-    Begin {}
-    
+        [ValidateLength(0,255)]
+        [string]$RelayUrl=""
+    )  
     Process {
         $tag_id = ($Type.ToLower())[0]
         $Target = $Target.ToLower()
-
-        @($tag_id,$Target,$RelayUrl) #
+        @($tag_id,$Target,$RelayUrl)
     }
-
-    End {}
 }
