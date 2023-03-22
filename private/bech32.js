@@ -1,37 +1,63 @@
+// Copyright (c) 2017, 2021 Pieter Wuille
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+// THE SOFTWARE.
 
-$charSet = 'qpzry9x8gf2tvdw0s3jn54khce6mua7l'
-$generator = @(0x3b6a57b2, 0x26508e6d, 0x1ea119fa, 0x3d4233dd, 0x2a1462b3)
-$encodings = @{bech32 = 'bech32'; bech32m = 'bech32m'}
+// Credit: https://github.com/sipa/bech32/blob/master/ref/javascript/bech32.js
 
+var CHARSET = 'qpzry9x8gf2tvdw0s3jn54khce6mua7l';
+var GENERATOR = [0x3b6a57b2, 0x26508e6d, 0x1ea119fa, 0x3d4233dd, 0x2a1462b3];
 
-function getEncodingConst($enc) {
-  if ($enc -eq $encodings.BECH32) {
-    return 1
-  } 
-  elseif ($enc -eq $encodings.BECH32M) {
-    return 0x2bc830a3
-  } 
-  else {
-    return $null
+const encodings = {
+  BECH32: "bech32",
+  BECH32M: "bech32m",
+};
+
+module.exports = {
+  decode: decode,
+  encode: encode,
+  encodings: encodings,
+};
+
+function getEncodingConst (enc) {
+  if (enc == encodings.BECH32) {
+    return 1;
+  } else if (enc == encodings.BECH32M) {
+    return 0x2bc830a3;
+  } else {
+    return null;
   }
 }
 
-function polymod($values) {
-  $chk = 1
-
-  for ($p = 0; $p -lt $values.length; $p++) {
-    $top = $chk -shr 25
-    $chk = ($chk -and 0x1ffffff) -shl 5 -xor $values[$p]
-    for ($i = 0; $i -lt 5; $i++) {
-      if (($top -shr $i) -and 1) {
-        $chk -xor $generator[$i]
+function polymod (values) {
+  var chk = 1;
+  for (var p = 0; p < values.length; ++p) {
+    var top = chk >> 25;
+    chk = (chk & 0x1ffffff) << 5 ^ values[p];
+    for (var i = 0; i < 5; ++i) {
+      if ((top >> i) & 1) {
+        chk ^= GENERATOR[i];
       }
     }
   }
-  return $chk
+  return chk;
 }
 
-<#
 function hrpExpand (hrp) {
   var ret = [];
   var p;
@@ -104,48 +130,4 @@ function decode (bechString, enc) {
     return null;
   }
   return {hrp: hrp, data: data.slice(0, data.length - 6)};
-}
-#>
-
-function ConvertFrom-Bech32 {
-    [CmdletBinding()]
-    param(
-        [Parameter(
-            HelpMessage = 'Bech32 string to be decoded',
-            Position=0,
-            ValueFromPipeline=$true,
-            Mandatory=$true)]
-        [ValidateNotNullOrEmpty()]
-        [ValidateLength(8,2048)]
-        [ValidateScript({
-            ($_.Split($separator)[0]).Length -ge 1 -and ($_.Split($separator)[0]).Length -le 83
-        })]
-        [string]$Bech32
-    )
-    begin {
-
-
-      #$js = Create-ScriptEngine "JScript" $jscode
-    }
-    
-    process {
-        <#
-        # Split Bech32 string into human-readable part (HRP) and data part
-        $hrp = $Bech32.Split($separator)[0]
-        Write-Verbose "Bech32 HRP: $hrp"
-        Write-Verbose ("Bech32 HRP length: {0}" -f $hrp.Length)
-                
-        $data = $Bech32.Split($separator)[1]
-        Write-Verbose "Bech32 data part: $hrp"
-        Write-Verbose ("Bech32 data part length: {0}" -f $hrp.Length)
-        #>
-
-        # Need to implement proper bech32 decoding above
-        'b726e71bce585201181ace89326ae428406cee071395f9bf12b62b62d0449b23' # my pub key in hex (for now)      
-        
-        #$js.decode($Bech32)
-
-    }
-
-    end {}
 }
