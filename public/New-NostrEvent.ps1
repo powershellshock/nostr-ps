@@ -10,14 +10,14 @@ function New-NostrEvent {
         $Session = $nostrId,
         
         [Parameter(
-            HelpMessage = 'Basic event kind of the nostr event. Each kind has a corresponding integer value.',
+            HelpMessage = 'Kind of the nostr event. Each kind has a corresponding integer value. https://github.com/nostr-protocol/nips#event-kinds',
             Mandatory=$true)]
         [ValidateNotNullOrEmpty()]
         [Event_Kind]
         $Kind,
 
         [Parameter(
-            HelpMessage = 'One or more tags for the event (event, pubkey, etc)',
+            HelpMessage = 'One or more event tags for the event (event, pubkey, etc).',
             Mandatory=$false)]
         [ValidateNotNullOrEmpty()]
         [array]
@@ -33,7 +33,7 @@ function New-NostrEvent {
     $nsec = $nostrId.GetNetworkCredential().Password
 
     $nostrEvent = [ordered]@{
-        id = ''  # TO BE COMPUTED
+        id = ''
         pubkey = $nostrId.GetNetworkCredential().username
         created_at = [math]::Round((Get-Date -UFormat %s),0)
         kind = $Kind -as [int]
@@ -44,7 +44,7 @@ function New-NostrEvent {
     
     $nostrEvent = Update-NostrEventHash $nostrEvent
     
-    $output = $nostrEvent | ConvertTo-Json #-Compress
+    $output = $nostrEvent | ConvertTo-Json -Compress
     
     $output
     Write-Verbose ("Bytes: {0}" -f [System.Text.Encoding]::UTF8.GetByteCount($output))

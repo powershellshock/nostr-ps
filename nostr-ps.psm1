@@ -35,7 +35,8 @@
 . "$PSScriptRoot\public\ConvertTo-EpochSeconds.ps1"
 . "$PSScriptRoot\public\Import-NostrKey.ps1"
 . "$PSScriptRoot\public\New-NostrEvent.ps1"
-. "$PSScriptRoot\public\Send-NostrEventAsync.ps1"
+. "$PSScriptRoot\public\Send-NostrMsgAsync.ps1"
+. "$PSScriptRoot\public\Receive-NostrMsg.ps1"
 . "$PSScriptRoot\scripts\Test-NostrModule.ps1"
 
 # Export functions for user
@@ -46,7 +47,8 @@ $ExportedCommands = @(
     'ConvertTo-EpochSeconds',
     'Import-NostrKey',
     'New-NostrEvent',
-    'Send-NostrEventAsync',
+    'Send-NostrMSgAsync',
+    'Receive-NostrMsg',
     'Test-NostrModule'
 )
 $ExportedCommands | ForEach-Object {
@@ -54,7 +56,7 @@ $ExportedCommands | ForEach-Object {
 }
 
 # Export the PSCredential object used for secure nsec (private key) storage
-Export-ModuleMember -Variable nostrId
+Export-ModuleMember -Variable nostrSession
 
 # Aliases to export
 Export-ModuleMember -Alias *

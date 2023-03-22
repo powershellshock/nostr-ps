@@ -1,4 +1,4 @@
-function Send-NostrEventAsync {
+function Send-NostrMsgAsync {
     [CmdletBinding()]
     Param(
         [Parameter(

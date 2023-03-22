@@ -22,11 +22,14 @@
     )
     process
     {
-        [System.Management.Automation.PSCredential]$Global:nostrId = Get-Credential -UserName $npub -Message "Enter the nsec (private key) for address: $npub"    
+        $input = Get-Credential -UserName $npub -Message "Enter the nsec (private key) for address: $npub"
 
-        $nostrId.UserName = $nostrId.GetNetworkCredential().UserName | ConvertFrom-Bech32
+        $npubHex = $input.UserName | ConvertFrom-Bech32
+        $nsecHex = $input.GetNetworkCredential().Password | ConvertTo-SecureString -AsPlainText -Force
 
-        # If -PassThru is specified, write the credential object to the pipeline (the global variable will also be exported to the calling session with Export-ModuleMember)
+        $nostrId = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList $npubHex,$nsecHex
+
+        # If -PassThru is specified, write the PSCredential object to the pipeline
         if ($PassThru) {
             $nostrId
         }
