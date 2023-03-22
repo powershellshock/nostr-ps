@@ -6,7 +6,8 @@ function New-NostrEvent {
             HelpMessage = 'PSCredential object containing the npub (address) and nsec (private key).',
             Mandatory=$false)]
         [ValidateNotNullOrEmpty()]
-        [System.Management.Automation.PSCredential]$Credential = $nostrId,
+        [System.Management.Automation.PSCredential]
+        $Session = $nostrId,
         
         [Parameter(
             HelpMessage = 'Basic event kind of the nostr event. Each kind has a corresponding integer value.',
@@ -33,7 +34,7 @@ function New-NostrEvent {
 
     $nostrEvent = [ordered]@{
         id = ''  # TO BE COMPUTED
-        pubkey = $nostrId.GetNetworkCredential().username | ConvertFrom-Bech32
+        pubkey = $nostrId.GetNetworkCredential().username
         created_at = [math]::Round((Get-Date -UFormat %s),0)
         kind = $Kind -as [int]
         tags = $Tags

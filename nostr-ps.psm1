@@ -29,28 +29,31 @@
 }
 
 # Includes
-. "$PSScriptRoot\private\Update-NostrEventHash.ps1"
 . "$PSScriptRoot\private\New-NostrEventTag.ps1"
+. "$PSScriptRoot\private\Update-NostrEventHash.ps1"
 . "$PSScriptRoot\public\ConvertFrom-Bech32.ps1"
 . "$PSScriptRoot\public\ConvertTo-EpochSeconds.ps1"
-. "$PSScriptRoot\public\Get-NostrKey.ps1"
+. "$PSScriptRoot\public\Import-NostrKey.ps1"
 . "$PSScriptRoot\public\New-NostrEvent.ps1"
+. "$PSScriptRoot\public\Send-NostrEventAsync.ps1"
+. "$PSScriptRoot\scripts\Test-NostrModule.ps1"
 
-# Functions to export
+# Export functions for user
 $ExportedCommands = @(
+    'New-NostrEventTag',
+    'Update-NostrEventHash',
     'ConvertFrom-Bech32',
     'ConvertTo-EpochSeconds',
-    'Get-NostrKey',
+    'Import-NostrKey',
     'New-NostrEvent',
-    'New-NostrEventTag',
-    'Test-NostrModule',
-    'Update-NostrEventHash'
+    'Send-NostrEventAsync',
+    'Test-NostrModule'
 )
 $ExportedCommands | ForEach-Object {
     Export-ModuleMember -Function $_
 }
 
-# Variables to export
+# Export the PSCredential object used for secure nsec (private key) storage
 Export-ModuleMember -Variable nostrId
 
 # Aliases to export
