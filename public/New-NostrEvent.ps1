@@ -28,11 +28,11 @@ function New-NostrEvent {
         [string]
         $Content
     )
-    $nsec = $nostrId.GetNetworkCredential().Password
+    #$nsec = $nostrId.GetNetworkCredential().Password
 
     $nostrEvent = [ordered]@{
         id = ''
-        pubkey = $nostrId.GetNetworkCredential().username
+        pubkey = $nostrId.UserName | ConvertFrom-Bech32
         created_at = [math]::Round((Get-Date -UFormat %s),0)
         kind = $Kind -as [int]
         tags = $Tags

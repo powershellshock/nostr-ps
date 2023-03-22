@@ -28,6 +28,8 @@
     app_specific_data = 30078
 }
 
+#$Bech32Prefixes = @('npub','nsec','note','nevent','nprofile','nrelay','naddr')
+
 # Includes
 . "$PSScriptRoot\private\New-NostrEventTag.ps1"
 . "$PSScriptRoot\private\Update-NostrEventHash.ps1"

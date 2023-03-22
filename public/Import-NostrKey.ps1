@@ -22,10 +22,10 @@
     )
     process
     {
-        $input = Get-Credential -UserName $npub -Message "Enter the nsec (private key) for address: $npub"
+        $userInput = Get-Credential -UserName $npub -Message "Enter the nsec (private key) for address: $npub"
 
-        $npubHex = $input.UserName | ConvertFrom-Bech32
-        $nsecHex = $input.GetNetworkCredential().Password | ConvertTo-SecureString -AsPlainText -Force
+        $npubHex = $userInput.UserName | ConvertFrom-Bech32
+        $nsecHex = $userInput.GetNetworkCredential().Password | ConvertTo-SecureString -AsPlainText -Force
 
         $nostrId = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList $npubHex,$nsecHex
 

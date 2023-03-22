@@ -1,14 +1,36 @@
 function Test-NostrModule {
 
-  $myTags = @(
-    @(New-NostrEventTag -Type Event -Target 'abcdef0123456789abcdef0123456789' -RelayUrl 'wss://eden.nostr.land'),
-    @(New-NostrEventTag -Type Pubkey -Target '0123456789abcdef0123456789abcdef' -RelayUrl 'wss://eden.nostr.land')
-  )
-  $test = New-NostrEvent -Kind text_note -Tags $myTags -Content 'Hello, world!' -Verbose
-  $test
+  
+  $Global:testOutput = New-NostrPost 'Hello, world!  Sent from nostr-ps, the Powershell nostr client. https://github.com/powershellshock/nostr-ps'
+
+
+  $Global:expectedHexKey = 'b726e71bce585201181ace89326ae428406cee071395f9bf12b62b62d0449b23'
+
+  if (($testOutput | ConvertFrom-Json).pubkey -eq $expectedHexKey) {
+    Write-Host -ForegroundColor Green "Bech32 decode temp workaround: PASSED"
+  }
+  else {
+    Write-Host -ForegroundColor Red "Bech32 decode temp workaround: FAILED"
+  }
+
+
+  # Test ConverFrom-Bech32
+  if ('7e7e9c42a91bfef19fa929e5fda1b72e0ebc1a4c1141673e2794234d86addf4e' -eq (ConvertFrom-Bech32 'npub10elfcs4fr0l0r8af98jlmgdh9c8tcxjvz9qkw038js35mp4dma8qzvjptg')) {
+    Write-Host -ForegroundColor Green "Bech32 npub1 decoding: PASSED"
+  }
+  else {
+    Write-Host -ForegroundColor Red "Bech32 npub1 decoding: FAILED"
+  }
+
+  # Test ConverFrom-Bech32
+  if ('67dea2ed018072d675f5415ecfaed7d2597555e202d85b3d65ea4e58d2d92ffa' -eq (ConvertFrom-Bech32 'nsec1vl029mgpspedva04g90vltkh6fvh240zqtv9k0t9af8935ke9laqsnlfe5')) {
+    Write-Host -ForegroundColor Green "Bech32 nsec1 decoding: PASSED"
+  }
+  else {
+    Write-Host -ForegroundColor Red "Bech32 nsec1 decoding: FAILED"
+  }
 }
 
-New-NostrPost 'Hello, world!  Sent from nostr-ps, the Powershell nostr client. https://github.com/powershellshock/nostr-ps'
 #Get-NostrNsec -npub 'npub1kunwwx7wtpfqzxq6e6yny6hy9pqxems8zw2ln0cjkc4k95zynv3s4kwd3c' -PassThru | Export-Clixml C:\Users\jared\nostr.cred
 
 
