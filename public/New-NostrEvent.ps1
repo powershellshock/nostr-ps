@@ -1,6 +1,5 @@
 function New-NostrEvent {
     [CmdletBinding()]
-    [OutputType([array])]
     Param(
         [Parameter(
             HelpMessage = 'PSCredential object containing the npub (address) and nsec (private key).',
@@ -19,9 +18,8 @@ function New-NostrEvent {
         [Parameter(
             HelpMessage = 'One or more event tags for the event (event, pubkey, etc).',
             Mandatory=$false)]
-        [ValidateNotNullOrEmpty()]
         [array]
-        $Tags,
+        $Tags = @(),
 
         [Parameter(
             HelpMessage = 'Arbitrary content of the event.',
@@ -39,7 +37,7 @@ function New-NostrEvent {
         kind = $Kind -as [int]
         tags = $Tags
         content = $Content
-        sig = '1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef'
+        sig = ''
     }
     
     $nostrEvent = Update-NostrEventHash $nostrEvent

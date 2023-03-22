@@ -7,6 +7,8 @@ function Test-NostrModule {
   $test = New-NostrEvent -Kind text_note -Tags $myTags -Content 'Hello, world!' -Verbose
   $test
 }
+
+New-NostrPost 'Hello, world!  Sent from nostr-ps, the Powershell nostr client. https://github.com/powershellshock/nostr-ps'
 #Get-NostrNsec -npub 'npub1kunwwx7wtpfqzxq6e6yny6hy9pqxems8zw2ln0cjkc4k95zynv3s4kwd3c' -PassThru | Export-Clixml C:\Users\jared\nostr.cred
 
 
@@ -25,8 +27,34 @@ function Test-NostrModule {
   "sig": <64-bytes hex of the signature of the sha256 hash of the serialized event data, which is the same as the "id" field>
 }
 #>
+
+
 <#
-["EVENT",{"id":"e9b1fc485783bf6d4e1fbf19b71a8f7943db8c92377b66f6ff89d7797ba9a515","pubkey":"b726e71bce585201181ace89326ae428406cee071395f9bf12b62b62d0449b23","created_at":1679347355,"kind":1,"tags":[],"content":"Test message from snort","sig":"26a4e9c4bfcc52ea89e37d5c5424331148d95563443ad8a34f34be68a552fdd6b22681c69e5c8f970050961a5c87e9c05f3775d8e882b5663857daaeb6fff395"}]
+## SAMPLE POST
+["EVENT",{
+  "id":"e9b1fc485783bf6d4e1fbf19b71a8f7943db8c92377b66f6ff89d7797ba9a515",
+  "pubkey":"b726e71bce585201181ace89326ae428406cee071395f9bf12b62b62d0449b23",
+  "created_at":1679347355,
+  "kind":1,
+  "tags":[],
+  "content":"Test message from snort",
+  "sig":"26a4e9c4bfcc52ea89e37d5c5424331148d95563443ad8a34f34be68a552fdd6b22681c69e5c8f970050961a5c87e9c05f3775d8e882b5663857daaeb6fff395"
+}]
+
+
+## New-NostrPost
+{
+  "id":"e9b1fc485783bf6d4e1fbf19b71a8f7943db8c92377b66f6ff89d7797ba9a515",
+  "pubkey":"npub1kunwwx7wtpfqzxq6e6yny6hy9pqxems8zw2ln0cjkc4k95zynv3s4kwd3c",
+  "created_at":1679458467.0,
+  "kind":1,
+  "tags":[],
+  "content":"Hello, world!  Sent from nostr-ps, the Powershell nostr client.",
+  "sig":"26a4e9c4bfcc52ea89e37d5c5424331148d95563443ad8a34f34be68a552fdd6b22681c69e5c8f970050961a5c87e9c05f3775d8e882b5663857daaeb6fff395"
+}
+
+
+
 
 
 ["EVENT", {id: "e9b1fc485783bf6d4e1fbf19b71a8f7943db8c92377b66f6ff89d7797ba9a515",…}]

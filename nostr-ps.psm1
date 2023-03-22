@@ -35,6 +35,7 @@
 . "$PSScriptRoot\public\ConvertTo-EpochSeconds.ps1"
 . "$PSScriptRoot\public\Import-NostrKey.ps1"
 . "$PSScriptRoot\public\New-NostrEvent.ps1"
+. "$PSScriptRoot\public\New-NostrPost.ps1"
 . "$PSScriptRoot\public\Send-NostrMsgAsync.ps1"
 . "$PSScriptRoot\public\Receive-NostrMsg.ps1"
 . "$PSScriptRoot\scripts\Test-NostrModule.ps1"
@@ -47,6 +48,7 @@ $ExportedCommands = @(
     'ConvertTo-EpochSeconds',
     'Import-NostrKey',
     'New-NostrEvent',
+    'New-NostrPost',
     'Send-NostrMSgAsync',
     'Receive-NostrMsg',
     'Test-NostrModule'
