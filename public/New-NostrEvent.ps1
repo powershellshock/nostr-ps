@@ -45,5 +45,6 @@ function New-NostrEvent {
     $output = $nostrEvent | ConvertTo-Json -Compress
     
     $output
+    Write-Verbose ("Nostr Event: {0}" -f $output)
     Write-Verbose ("Bytes: {0}" -f [System.Text.Encoding]::UTF8.GetByteCount($output))
 }

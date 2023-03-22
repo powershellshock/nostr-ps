@@ -1,7 +1,7 @@
 function Test-NostrModule {
 
   
-  $Global:testOutput = New-NostrPost 'Hello, world!  Sent from nostr-ps, the Powershell nostr client. https://github.com/powershellshock/nostr-ps'
+  $Global:testOutput = New-NostrPost 'Hello, world!  Sent from nostr-ps, the Powershell nostr client. https://github.com/powershellshock/nostr-ps' -Verbose
 
 
   $Global:expectedHexKey = 'b726e71bce585201181ace89326ae428406cee071395f9bf12b62b62d0449b23'
