@@ -36,7 +36,6 @@ $separator = '1'
 . "$PSScriptRoot\private\bech32.ps1"
 . "$PSScriptRoot\private\New-NostrEventTag.ps1"
 . "$PSScriptRoot\private\Update-NostrEventHash.ps1"
-. "$PSScriptRoot\public\ConvertFrom-Bech32.ps1"
 . "$PSScriptRoot\public\ConvertTo-EpochSeconds.ps1"
 . "$PSScriptRoot\public\Import-NostrKey.ps1"
 . "$PSScriptRoot\public\New-NostrEvent.ps1"
@@ -50,15 +49,14 @@ $ExportedCommands = @(
     'New-NostrEventTag',
     'Update-NostrEventHash',
     'ConvertFrom-Bech32',
+    'ConvertTo-Bech32'
     'ConvertTo-EpochSeconds',
     'Import-NostrKey',
     'New-NostrEvent',
     'New-NostrPost',
     'Send-NostrMSgAsync',
     'Receive-NostrMsg',
-    'Test-NostrModule',
-    'encode',
-    'decode'
+    'Test-NostrModule'
 )
 $ExportedCommands | ForEach-Object {
     Export-ModuleMember -Function $_

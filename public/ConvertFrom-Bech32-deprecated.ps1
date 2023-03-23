@@ -1,5 +1,5 @@
 
-function ConvertFrom-Bech32 {
+function ConvertFrom-Bech32-deprecated {
     [CmdletBinding()]
     param(
         [Parameter(
@@ -15,7 +15,7 @@ function ConvertFrom-Bech32 {
         [string]$Bech32
     )
     
-    #decode -bechString $Bech32 -enc BECH32
+    #decode -bechString $Bech32 -enc bech32
 
     # Need to implement proper bech32 decoding above
     'b726e71bce585201181ace89326ae428406cee071395f9bf12b62b62d0449b23' # my pub key in hex (for now)      
