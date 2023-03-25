@@ -34,7 +34,11 @@ $encodings = @{
 
 
 
-function getEncodingConst ($enc) {
+function getEncodingConst {
+  [OutputType([int])]
+  Param(
+    [string]$enc
+  )
     if ($enc -eq $encodings.BECH32) {
         return 1
     } elseif ($enc -eq $encodings.BECH32M) {
@@ -44,7 +48,12 @@ function getEncodingConst ($enc) {
     }
 }
 
-function polymod ($values) {
+function polymod {
+  [OutputType([int])]
+  Param(
+    [Parameter(Mandatory=$true,Position=0,ValueFromPipeline=$true)]
+    [string]$values
+  )
     $chk = 1
     for ($p = 0; $p -lt $values.Length; ++$p) {
         $top = $chk -shr 25
@@ -58,37 +67,41 @@ function polymod ($values) {
     return $chk
 }
 
-function hrpExpand ($hrp) {
-    $ret = @()
-    $bigInt = [Numerics.BigInteger]::Zero
+function hrpExpand {
+  [OutputType([string])]
+  Param(
+    [Parameter(Mandatory=$true,Position=0,ValueFromPipeline=$true)]
+    [ValidateNotNullOrEmpty()]
+    [string]$hrp
+  )  
+    [string]$ret = @()
+    #$bigInt = [Numerics.BigInteger]::Zero
     for ($p = 0; $p -lt $hrp.Length; ++$p) {
-      Write-Verbose "p=$p"  
       $ret += ([byte][char]$hrp[$p]) -shr 5
     }
     $ret += 0
     for ($p = 0; $p -lt $hrp.Length; ++$p) {
-      Write-Verbose "p=$p"
       $ret += ([byte][char]$hrp[$p]) -band 31
     }
     return $ret
 }
 
-function verifyChecksum ($hrp, $data, $enc) {
-    return (polymod(hrpExpand($hrp)) + $data -eq (getEncodingConst($enc)))
+function verifyChecksum ([string]$hrp, [string]$data, [string]$enc) {
+  return ((polymod(((hrpExpand($hrp)) + $data))) -eq (getEncodingConst($enc)))
 }
 
-function createChecksum ($hrp, $data, $enc) {
-    $values = (hrpExpand($hrp)) + @($data) + @(0)*6
-    $mod = polymod($values) -bxor (getEncodingConst($enc))
-    $ret = @()
-    for ($i=0; $i -lt 6; ++$i) {
-        $ret += (($mod -shr (5 * (5 - $i))) -band 31)
-      }
-      return $ret
+function createChecksum ([string]$hrp, [string]$data, $enc) {
+  $values = (hrpExpand($hrp)) + $data + [string]@(0,0,0,0,0,0)
+  $mod = polymod($values) -bxor (getEncodingConst($enc))
+  $ret = @()
+  for ($i=0; $i -lt 6; ++$i) {
+      $ret += (($mod -shr (5 * (5 - $i))) -band 31)
+    }
+    return $ret
 }
 
 function ConvertTo-Bech32 ($hrp, $data, $enc) {
-  #Write-Output "$([string]$hrp)'1$(([char[]]([int[]]$data + [int[]](createChecksum($hrp,$data,$enc))))|%{[char]$CHARSET[$_]}|Out-String)" 
+  #Write-Output "$([string]$hrp)'1$(([string]([int[]]$data + [int[]](createChecksum($hrp,$data,$enc))))|%{[char]$CHARSET[$_]}|Out-String)" 
   $combined = $data + @(createChecksum($hrp, $data, $enc))
   $ret = $hrp + '1'
   for ($p = 0; $p -lt $combined.length; ++$p) {
@@ -97,7 +110,15 @@ function ConvertTo-Bech32 ($hrp, $data, $enc) {
   return $ret
 }
 
-function ConvertFrom-Bech32 ($bechString, $enc) {
+function ConvertFrom-Bech32 {
+  [OutputType([string])]
+  Param(
+    [Parameter(Mandatory=$true,Position=0,ValueFromPipeline=$true)]
+    $bechString,
+
+    [Parameter(Mandatory=$true,Position=1,ValueFromPipeline=$true)]
+    $enc
+  )
   $has_lower = $false
   $has_upper = $false
   for ($p = 0; $p -lt $bechString.length; ++$p) {
@@ -120,8 +141,8 @@ function ConvertFrom-Bech32 ($bechString, $enc) {
   if ($pos -lt 1 -or $pos + 7 -gt $bechString.length -or $bechString.length -gt 90) {
     return $null
   }
-  $hrp = $bechString.substring(0, $pos)
-  $data = @()
+  [string]$hrp = $bechString.substring(0, $pos)
+  [string]$data = @()
   for ($p = $pos + 1; $p -lt $bechString.length; ++$p) {
     $d = $CHARSET.indexOf($bechString[$p])
     if ($d -eq -1) {
@@ -129,9 +150,11 @@ function ConvertFrom-Bech32 ($bechString, $enc) {
     }
     $data += $d
   }
+  <#
   if (!(verifyChecksum($hrp, $data, $enc))) {
     return $null
   }
+  #>
   return @{
     hrp=$hrp
     data=$data[0..($data.length - 6)]

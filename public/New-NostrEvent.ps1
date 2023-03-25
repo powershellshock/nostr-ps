@@ -32,7 +32,7 @@ function New-NostrEvent {
 
     $nostrEvent = [ordered]@{
         id = ''
-        pubkey = (ConvertFrom-Bech32 -bechString $nostrId.UserName -enc bech32).data
+        pubkey = ConvertFrom-Bech32 -bechString $nostrId.UserName -enc bech32
         created_at = [math]::Round((Get-Date -UFormat %s),0)
         kind = $Kind -as [int]
         tags = $Tags
