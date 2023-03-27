@@ -35,7 +35,7 @@ $encodings = @{
 
 
 function getEncodingConst {
-  [OutputType([int])]
+  #[OutputType([int])]
   Param(
     [string]$enc
   )
@@ -49,7 +49,7 @@ function getEncodingConst {
 }
 
 function polymod {
-  [OutputType([int])]
+  #[OutputType([int])]
   Param(
     [Parameter(Mandatory=$true,Position=0,ValueFromPipeline=$true)]
     [string]$values
@@ -86,11 +86,11 @@ function hrpExpand {
     return $ret
 }
 
-function verifyChecksum ([string]$hrp, [string]$data, [string]$enc) {
+function verifyChecksum ([string]$hrp, $data, [string]$enc) {
   return ((polymod(((hrpExpand($hrp)) + $data))) -eq (getEncodingConst($enc)))
 }
 
-function createChecksum ([string]$hrp, [string]$data, $enc) {
+function createChecksum ([string]$hrp, $data, $enc) {
   $values = (hrpExpand($hrp)) + $data + [string]@(0,0,0,0,0,0)
   $mod = polymod($values) -bxor (getEncodingConst($enc))
   $ret = @()
@@ -142,7 +142,7 @@ function ConvertFrom-Bech32 {
     return $null
   }
   [string]$hrp = $bechString.substring(0, $pos)
-  [string]$data = @()
+  [int[]]$data = @()
   for ($p = $pos + 1; $p -lt $bechString.length; ++$p) {
     $d = $CHARSET.indexOf($bechString[$p])
     if ($d -eq -1) {
@@ -155,8 +155,9 @@ function ConvertFrom-Bech32 {
     return $null
   }
   #>
+  $ofs=''
   return @{
     hrp=$hrp
-    data=$data[0..($data.length - 6)]
+    data=([string]$CHARSET[$data[0..($data.length - 6)]])
   }
 }

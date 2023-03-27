@@ -14,16 +14,16 @@ function Test-NostrModule {
   }
 
 
-  # Test ConverFrom-Bech32
-  if ('7e7e9c42a91bfef19fa929e5fda1b72e0ebc1a4c1141673e2794234d86addf4e' -eq (ConvertFrom-Bech32 'npub10elfcs4fr0l0r8af98jlmgdh9c8tcxjvz9qkw038js35mp4dma8qzvjptg' -enc bech32)) {
+  # Test ConvertFrom-Bech32
+  if ('7e7e9c42a91bfef19fa929e5fda1b72e0ebc1a4c1141673e2794234d86addf4e' -eq (ConvertFrom-Bech32 'npub10elfcs4fr0l0r8af98jlmgdh9c8tcxjvz9qkw038js35mp4dma8qzvjptg' -enc bech32).data) {
     Write-Host -ForegroundColor Green "Bech32 npub1 decoding: PASSED"
   }
   else {
     Write-Host -ForegroundColor Red "Bech32 npub1 decoding: FAILED"
   }
 
-  # Test ConverFrom-Bech32 
-  if ('67dea2ed018072d675f5415ecfaed7d2597555e202d85b3d65ea4e58d2d92ffa' -eq (ConvertFrom-Bech32 'nsec1vl029mgpspedva04g90vltkh6fvh240zqtv9k0t9af8935ke9laqsnlfe5' -enc bech32)) {
+  # Test ConvertFrom-Bech32 
+  if ('67dea2ed018072d675f5415ecfaed7d2597555e202d85b3d65ea4e58d2d92ffa' -eq (ConvertFrom-Bech32 'nsec1vl029mgpspedva04g90vltkh6fvh240zqtv9k0t9af8935ke9laqsnlfe5' -enc bech32).data) {
     Write-Host -ForegroundColor Green "Bech32 nsec1 decoding: PASSED"
   }
   else {
