@@ -42,6 +42,7 @@ $separator = '1'
 . "$PSScriptRoot\public\New-NostrPost.ps1"
 . "$PSScriptRoot\public\Send-NostrMsgAsync.ps1"
 . "$PSScriptRoot\public\Receive-NostrMsg.ps1"
+. "$PSScriptRoot\scripts\Test-Bech32.ps1"
 . "$PSScriptRoot\scripts\Test-NostrModule.ps1"
 
 # Export functions for user
@@ -56,6 +57,7 @@ $ExportedCommands = @(
     'New-NostrPost',
     'Send-NostrMSgAsync',
     'Receive-NostrMsg',
+    'Test-Bech32',
     'Test-NostrModule'
 )
 $ExportedCommands | ForEach-Object {
