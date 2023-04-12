@@ -184,7 +184,7 @@ namespace Bech32_Csharp
 			string[] parts = addr.split(separator)
 			//string hrp = parts.Take(parts.len - 1);		
 			//string hrp = string.Join("1", hrp);	
-			string hrp = string.Join("1", parts.Take(parts.len - 1));
+			//string hrp = string.Join("1", parts.Take(parts.len - 1));
 
 			//witnessVersion = 0;
 			int dataLen = addr2.Length - 3;
