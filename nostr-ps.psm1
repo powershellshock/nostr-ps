@@ -49,8 +49,8 @@ $separator = '1'
 $ExportedCommands = @(
     'New-NostrEventTag',
     'Update-NostrEventHash',
-    'ConvertFrom-Bech32',
-    'ConvertTo-Bech32'
+    #'ConvertFrom-Bech32',
+    #'ConvertTo-Bech32'
     'ConvertTo-EpochSeconds',
     'Import-NostrKey',
     'New-NostrEvent',

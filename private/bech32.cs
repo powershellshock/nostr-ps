@@ -1,26 +1,27 @@
-/* Copyright (c) 2017 Pieter Wuille
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
- *
- * https://github.com/DesWurstes/Bech32-Csharp
- *
- */
+/* Copyright (c) 2017 Pieter Wuille - original cs source at https://github.com/DesWurstes/Bech32-Csharp
+* Copyright (c) 2023, Jared Poeppelman - genericized for arbitrary HRP and wrapped in ps module
+*
+* Permission is hereby granted, free of charge, to any person obtaining a copy
+* of this software and associated documentation files (the "Software"), to deal
+* in the Software without restriction, including without limitation the rights
+* to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+* copies of the Software, and to permit persons to whom the Software is
+* furnished to do so, subject to the following conditions:
+*
+* The above copyright notice and this permission notice shall be included in
+* all copies or substantial portions of the Software.
+*
+* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+* IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+* FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+* AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+* LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+* OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+* THE SOFTWARE.
+*
+
+*
+*/
 
 using System;
 using System.Collections.Generic;
@@ -122,23 +123,31 @@ namespace Bech32_Csharp
 		// witness program is 20-byte RIPEMD160(SHA256(pubkey)) for P2WPKH
 		// and 32-byte SHA256(script) for P2WSH
 		// https://bitcoin.stackexchange.com/a/71219
-		public static string EncodeBech32(byte witnessVersion, byte[] witnessProgram, bool isP2PKH, bool mainnet)
+		
+		//public static string EncodeBech32(byte witnessVersion, byte[] witnessProgram, bool isP2PKH, bool mainnet)
+		public static string EncodeBech32(string hrp, byte[] value)
 		{
-			if (witnessProgram.Length < 3 || witnessProgram.Length > 41) {
+			if (value.Length < 3 || value.Length > 41) {
 				throw new Bech32ConversionException("Invalid witness program!");
 			}
 			System.Text.StringBuilder ret;
 			byte[] data = new byte[80];
-			int len = convertBits(witnessProgram, 8, 5, true, data, 0, 1, witnessProgram.Length);
-			data[0] = witnessVersion;
+			int len = convertBits(value, 8, 5, true, data, 0, 1, value.Length);
+			//data[0] = witnessVersion;
+			data[0] = "0";
 			byte[] checksum;
-			if (mainnet) {
+			
+			/* if (mainnet) {
 				ret = new System.Text.StringBuilder("bc", 75);;
 				checksum = createChecksum("bc", data, len);
 			} else {
 				ret = new System.Text.StringBuilder("tb", 75);;
 				checksum = createChecksum("tb", data, len);
-			}
+			} */
+			ret = new System.Text.StringBuilder(hrp, 75);;
+			checksum = createChecksum(hrp, data, len);
+
+
 			ret.Append('1');
 			for (int i = 0; i < len; i++) {
 				ret.Append((char) data[i]);
@@ -153,18 +162,31 @@ namespace Bech32_Csharp
 		}
 		// Returns the witnessProgram
 		// isP2PKH is 0 for P2PKH, 1 for P2SH, 2 for "couldn't determine"
-		public static byte[] DecodeBech32(string addr, out byte witnessVersion, out byte isP2PKH, out bool mainnet) {
+		//public static byte[] DecodeBech32(string addr, out byte witnessVersion, out byte isP2PKH, out bool mainnet) {
+		public static byte[] DecodeBech32(string addr) {
 			string addr2 = addr.ToLower();
-			string hrp = "bc";
+
+/* 			string hrp = "bc";
 			if (addr2.StartsWith("bc1q")) {
 				mainnet = true;
 			} else if (addr2.StartsWith("tb1q")) {
 				mainnet = false;
 				hrp = "tb";
+			} else if (addr2.StartsWith("npub1")) {
+				mainnet = true;
+				hrp = "npub";
 			} else {
 				throw new Bech32ConversionException("Invalid Bech32 address!");
-			}
-			witnessVersion = 0;
+			} */
+
+			// extract generic HRP from address
+			char separator = "1"
+			string[] parts = addr.split(separator)
+			//string hrp = parts.Take(parts.len - 1);		
+			//string hrp = string.Join("1", hrp);	
+			string hrp = string.Join("1", parts.Take(parts.len - 1));
+
+			//witnessVersion = 0;
 			int dataLen = addr2.Length - 3;
 			byte[] data = new byte[dataLen];
 			for (int i = 0; i < dataLen; i++) {
@@ -181,7 +203,7 @@ namespace Bech32_Csharp
 			}
 			byte[] decoded = new byte[60];
 			int decodedLen = convertBits(data, 5, 8, false, decoded, 1, 0, dataLen - 1 - 6);
-			switch (decodedLen) {
+/* 			switch (decodedLen) {
 				case 20:
 					isP2PKH = 0;
 					break;
@@ -191,7 +213,7 @@ namespace Bech32_Csharp
 				default:
 					isP2PKH = 2;
 					break;
-			}
+			} */
 			byte[] final = new byte[decodedLen];
 			System.Buffer.BlockCopy(decoded, 0, final, 0, decodedLen);
 			return final;
