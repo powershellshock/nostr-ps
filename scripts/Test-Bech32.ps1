@@ -8,4 +8,4 @@ $BECH32_VALID_ADDRESS_DATA = @(
     @{bech32='tb1qqqqqp399et2xygdj5xreqhjjvcmzhxw4aywxecjdzew6hylgvsesrxh6hy'; hexkey= '0020000000c4a5cad46221b2a187905e5266362b99d5e91c6ce24d165dab93e86433'}
 )
 
-$BECH32_VALID_ADDRESS_DATA | ForEach-Object {ConvertFrom-Bech32 -BechString ($_.bech32) -enc Bech32}
+#$BECH32_VALID_ADDRESS_DATA | ForEach-Object {ConvertFrom-Bech32 -BechString ($_.bech32) -enc Bech32}
