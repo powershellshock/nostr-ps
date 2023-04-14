@@ -20,41 +20,52 @@
 ## THE SOFTWARE.
 ## Credit: https://github.com/sipa/bech32/blob/master/ref/javascript/bech32.js
 
-$CHARSET = 'qpzry9x8gf2tvdw0s3jn54khce6mua7l'
+[char[]]$CHARSET = 'qpzry9x8gf2tvdw0s3jn54khce6mua7l'
+
 $GENERATOR = @(0x3b6a57b2, 0x26508e6d, 0x1ea119fa, 0x3d4233dd, 0x2a1462b3)
 
-$encodings = @{
-    BECH32 = "bech32"
-    BECH32M = "bech32m"
+enum bech32Enc {
+  BECH32 = 1
+  BECH32M = 734539939
 }
 
-
-
-
-
+ 
+[int[]]$CHARSET_REV = @(
+  -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+  -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+  -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+  15, -1, 10, 17, 21, 20, 26, 30,  7,  5, -1, -1, -1, -1, -1, -1,
+  -1, 29, -1, 24, 13, 25,  9,  8, 23, -1, 18, 22, 31, 27, 19, -1,
+   1,  0,  3, 16, 11, 28, 12, 14,  6,  4,  2, -1, -1, -1, -1, -1,
+  -1, 29, -1, 24, 13, 25,  9,  8, 23, -1, 18, 22, 31, 27, 19, -1,
+   1,  0,  3, 16, 11, 28, 12, 14,  6,  4,  2, -1, -1, -1, -1, -1
+)
 
 
 function getEncodingConst {
-  [OutputType([int])]
+  [OutputType([uint32])]
   Param(
-    [string]$enc
+    [bech32Enc]$enc
   )
-    if ($enc -eq $encodings.BECH32) {
-        return 1
-    } elseif ($enc -eq $encodings.BECH32M) {
+    if ($enc -eq 'BECH32M') {
         return 0x2bc830a3
     } else {
-        return $null
+        return 1
     }
 }
-
+#
+#
+#"0x{0}" -f ([Convert]::ToString((getEncodingConst BECH32M), 16)) 
+#
+#
 function polymod {
-  [OutputType([int])]
+  #[OutputType([int])]
   Param(
     [Parameter(Mandatory=$true,Position=0,ValueFromPipeline=$true)]
-    [string]$values
+    $values
   )
-    $chk = 1
+  Write-Verbose "bech32:polymod:values:$values "  
+  $chk = 1
     for ($p = 0; $p -lt $values.Length; ++$p) {
         $top = $chk -shr 25
         $chk = ($chk -band 0x1ffffff) -shl 5 -bxor $values[$p]
@@ -68,7 +79,7 @@ function polymod {
 }
 
 function hrpExpand {
-  [OutputType([string])]
+  [OutputType([byte[]])]
   Param(
     [Parameter(Mandatory=$true,Position=0,ValueFromPipeline=$true)]
     [ValidateNotNullOrEmpty()]
@@ -86,12 +97,16 @@ function hrpExpand {
     return $ret
 }
 
-function verifyChecksum ([string]$hrp, [string]$data, [string]$enc) {
-  return ((polymod(((hrpExpand($hrp)) + $data))) -eq (getEncodingConst($enc)))
+function verifyChecksum ([string]$hrp, [byte[]]$data, [bech32Enc]$enc) {
+  return ((polymod(((hrpExpand($hrp)) + $data))) -eq ($enc -as [int]))
 }
 
-function createChecksum ([string]$hrp, [string]$data, $enc) {
+function createChecksum ([string]$hrp, [byte[]]$data, [bech32Enc]$enc) {
+  
+  # does the below martial the data properly?
   $values = (hrpExpand($hrp)) + $data + [string]@(0,0,0,0,0,0)
+
+  
   $mod = polymod($values) -bxor (getEncodingConst($enc))
   $ret = @()
   for ($i=0; $i -lt 6; ++$i) {
@@ -100,8 +115,7 @@ function createChecksum ([string]$hrp, [string]$data, $enc) {
     return $ret
 }
 
-function ConvertTo-Bech32 ($hrp, $data, $enc) {
-  #Write-Output "$([string]$hrp)'1$(([string]([int[]]$data + [int[]](createChecksum($hrp,$data,$enc))))|%{[char]$CHARSET[$_]}|Out-String)" 
+function ConvertTo-Bech32 ([string]$hrp, [byte[]]$data, [bech32Enc]$enc) {
   $combined = $data + @(createChecksum($hrp, $data, $enc))
   $ret = $hrp + '1'
   for ($p = 0; $p -lt $combined.length; ++$p) {
@@ -111,13 +125,10 @@ function ConvertTo-Bech32 ($hrp, $data, $enc) {
 }
 
 function ConvertFrom-Bech32 {
-  [OutputType([string])]
+  [OutputType([byte[]])]
   Param(
-    [Parameter(Mandatory=$true,Position=0,ValueFromPipeline=$true)]
-    $bechString,
-
-    [Parameter(Mandatory=$true,Position=1,ValueFromPipeline=$true)]
-    $enc
+    [string]$bechString,
+    [bech32Enc]$enc
   )
   $has_lower = $false
   $has_upper = $false
@@ -142,19 +153,22 @@ function ConvertFrom-Bech32 {
     return $null
   }
   [string]$hrp = $bechString.substring(0, $pos)
-  [string]$data = @()
+  [byte[]]$data = @()
   for ($p = $pos + 1; $p -lt $bechString.length; ++$p) {
-    $d = $CHARSET.indexOf($bechString[$p])
+    [char]$d = $CHARSET.indexOf($bechString[$p])
     if ($d -eq -1) {
       return $null
     }
     $data += $d
   }
-  <#
-  if (!(verifyChecksum($hrp, $data, $enc))) {
-    return $null
+  
+  if (verifyChecksum($hrp, $data, $enc)) {
+    Write-Verbose "Bech32 checksum verification succeeded"
+  } else {
+    Write-Warning "Bech32 checksum verification failed"
+    #return $null
   }
-  #>
+  
   return @{
     hrp=$hrp
     data=$data[0..($data.length - 6)]
